@@ -1,0 +1,49 @@
+@import "tailwindcss";
+@import "katex/dist/katex.min.css";
+
+:root {
+  --background: #eef2ff;
+  --foreground: #1e1b4b;
+  --card: #ffffff;
+  --card-foreground: #1f2937;
+  --primary: #4f46e5;
+  --primary-foreground: #ffffff;
+  --secondary: #fef3c7;
+  --secondary-foreground: #92400e;
+  --muted: #dcfce7;
+  --muted-foreground: #166534;
+  --border: #c7d2fe;
+  --accent: #34d399;
+  --input: #ffffff;
+  --ring: #6366f1;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --font-sans: var(--font-rubik), "Rubik", "Noto Sans Hebrew", "Segoe UI", "Arial", "Helvetica",
+    sans-serif;
+  --font-mono: "Consolas", "Courier New", monospace;
+}
+
+* {
+  @apply border-border;
+}
+
+body {
+  @apply bg-background text-foreground font-sans;
+  min-height: 100vh;
+  background-image: radial-gradient(circle at top left, #c7d2fe 0%, #eef2ff 30%, #f0fdf4 100%);
+}

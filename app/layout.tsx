@@ -1,0 +1,70 @@
+import type { Metadata } from "next";
+import { Rubik } from "next/font/google";
+import "./globals.css";
+import { AppHeader } from "@/components/app-header";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+
+const rubik = Rubik({
+  subsets: ["latin", "hebrew"],
+  variable: "--font-rubik",
+  display: "swap",
+});
+
+export const metadata: Metadata = {
+  title: "Math Master 5U",
+  description: "Daily competitive math riddles for high school students.",
+};
+
+export default async function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  let isLoggedIn = false;
+  let isAdmin = false;
+  let userProfile: { displayName: string | null; email: string | null } | null = null;
+
+  try {
+    const supabase = await createSupabaseServerClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    isLoggedIn = Boolean(user);
+    isAdmin = Boolean(
+      user?.email &&
+        process.env.ADMIN_EMAIL &&
+        user.email.toLowerCase() === process.env.ADMIN_EMAIL.toLowerCase(),
+    );
+
+    if (user) {
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("display_name,email")
+        .eq("id", user.id)
+        .maybeSingle<{ display_name: string; email: string }>();
+
+      if (!profileError && profile) {
+        userProfile = {
+          displayName: profile.display_name ?? null,
+          email: profile.email ?? user.email ?? null,
+        };
+      } else {
+        userProfile = {
+          displayName: null,
+          email: user.email ?? null,
+        };
+      }
+    }
+  } catch {
+    // Env keys are not connected yet, so header stays in guest mode.
+  }
+
+  return (
+    <html lang="he" className={`${rubik.variable} h-full antialiased`}>
+      <body className="min-h-full flex flex-col" dir="rtl">
+        <AppHeader isLoggedIn={isLoggedIn} isAdmin={isAdmin} user={userProfile} />
+        <main className="mx-auto flex w-full max-w-6xl flex-1 px-4 py-6 sm:px-6">{children}</main>
+      </body>
+    </html>
+  );
+}
