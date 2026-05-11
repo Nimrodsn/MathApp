@@ -1,3 +1,11 @@
+# Math Master 5U
+
+Competitive daily math riddles (Next.js + Supabase). Source: [github.com/Nimrodsn/MathApp](https://github.com/Nimrodsn/MathApp).
+
+**Deploy to the web:** follow [DEPLOY.md](./DEPLOY.md) (Vercel + Supabase checklist).
+
+---
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
