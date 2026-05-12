@@ -48,7 +48,7 @@ Use the **same** Supabase project as local, or a dedicated production project wi
 
 Without this, email links and some redirects may still point at `localhost`.
 
-4. **Profile avatars:** Projects created before `avatar_icon` existed should run this once in the Supabase **SQL Editor** (safe to run if the column already exists—it will no-op the add):
+4. **Profile avatars:** Projects created before `avatar_icon` existed should run this once in the Supabase **SQL Editor** (safe to re-run: `add column if not exists` no-ops). **When the app adds new avatar ids**, run the full block again (or only the `drop constraint` / `add constraint` lines) so the `CHECK` matches the latest list in this doc.
 
 ```sql
 alter table public.profiles add column if not exists avatar_icon text;
@@ -68,7 +68,15 @@ alter table public.profiles add constraint profiles_avatar_icon_check check (
     'rocket',
     'atom',
     'graduation-cap',
-    'lightbulb'
+    'lightbulb',
+    'star',
+    'heart',
+    'flame',
+    'compass',
+    'calculator',
+    'gem',
+    'target',
+    'infinity'
   )
 );
 ```

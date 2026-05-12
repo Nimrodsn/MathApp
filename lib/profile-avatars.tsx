@@ -2,10 +2,18 @@ import type { LucideIcon } from "lucide-react";
 import {
   Atom,
   Brain,
+  Calculator,
+  Compass,
+  Flame,
+  Gem,
   GraduationCap,
+  Heart,
+  Infinity,
   Lightbulb,
   Rocket,
   Sparkles,
+  Star,
+  Target,
   Trophy,
   UserCircle,
 } from "lucide-react";
@@ -19,6 +27,14 @@ export const PROFILE_AVATAR_IDS = [
   "atom",
   "graduation-cap",
   "lightbulb",
+  "star",
+  "heart",
+  "flame",
+  "compass",
+  "calculator",
+  "gem",
+  "target",
+  "infinity",
 ] as const;
 
 export type ProfileAvatarId = (typeof PROFILE_AVATAR_IDS)[number];
@@ -32,6 +48,14 @@ const ICON_MAP: Record<ProfileAvatarId, LucideIcon> = {
   atom: Atom,
   "graduation-cap": GraduationCap,
   lightbulb: Lightbulb,
+  star: Star,
+  heart: Heart,
+  flame: Flame,
+  compass: Compass,
+  calculator: Calculator,
+  gem: Gem,
+  target: Target,
+  infinity: Infinity,
 };
 
 export function isProfileAvatarId(value: string): value is ProfileAvatarId {

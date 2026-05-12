@@ -23,7 +23,15 @@ create table if not exists public.profiles (
         'rocket',
         'atom',
         'graduation-cap',
-        'lightbulb'
+        'lightbulb',
+        'star',
+        'heart',
+        'flame',
+        'compass',
+        'calculator',
+        'gem',
+        'target',
+        'infinity'
       )
     ),
   total_points integer not null default 0 check (total_points >= 0),
