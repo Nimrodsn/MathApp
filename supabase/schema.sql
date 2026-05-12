@@ -13,6 +13,19 @@ create table if not exists public.profiles (
   id uuid primary key references auth.users (id) on delete cascade,
   email text unique not null,
   display_name text not null,
+  avatar_icon text not null default 'user-circle'
+    check (
+      avatar_icon in (
+        'user-circle',
+        'brain',
+        'trophy',
+        'sparkles',
+        'rocket',
+        'atom',
+        'graduation-cap',
+        'lightbulb'
+      )
+    ),
   total_points integer not null default 0 check (total_points >= 0),
   current_streak integer not null default 0 check (current_streak >= 0),
   last_solved_date date,
@@ -215,3 +228,11 @@ $$;
 insert into storage.buckets (id, name, public)
 values ('riddle-images', 'riddle-images', true)
 on conflict (id) do nothing;
+
+-- Public read (required on some Supabase projects for the daily riddle page to load images from public URLs)
+drop policy if exists "riddle images select public" on storage.objects;
+create policy "riddle images select public"
+  on storage.objects
+  for select
+  to anon, authenticated
+  using (bucket_id = 'riddle-images');

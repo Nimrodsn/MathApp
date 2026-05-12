@@ -81,8 +81,10 @@ export function RiddleEditForm({
           ) : null}
 
           <label className="block space-y-2 text-sm font-medium">
-            <span>{imageUrl ? "Replace image (optional)" : "Optional image"}</span>
-            <Input name="image" type="file" accept="image/*" />
+            <span>
+              {imageUrl ? "Replace image (optional)" : "Optional image"} (max ~10 MB)
+            </span>
+            <Input name="image" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/*" />
           </label>
 
           <Button type="submit" disabled={pending}>

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+import { recordRiddleAttempt } from "@/lib/riddle-submit-server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export type SubmitAnswerState = {
@@ -39,22 +40,25 @@ export async function submitAnswerAction(
     return { status: "error", message: "Enter a valid answer before submitting." };
   }
 
-  const { data, error } = await supabase.rpc("submit_riddle_answer", {
-    p_riddle_id: parsed.data.riddleId,
-    p_answer: parsed.data.answer,
-  });
+  let payload:
+    | { status: "correct"; awarded_points: number; current_streak: number }
+    | { status: "already_solved" }
+    | { status: "incorrect" }
+    | { status: "not_found" };
 
-  if (error) {
-    return { status: "error", message: error.message };
+  try {
+    payload = await recordRiddleAttempt({
+      userId: user.id,
+      riddleId: parsed.data.riddleId,
+      rawAnswer: parsed.data.answer,
+    });
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "Something went wrong.";
+    return { status: "error", message };
   }
 
   revalidatePath("/riddle");
   revalidatePath("/leaderboard");
-
-  const payload = data as
-    | { status: "correct"; awarded_points: number; current_streak: number }
-    | { status: "already_solved" }
-    | { status: "incorrect" };
 
   if (payload.status === "correct") {
     return {
@@ -69,6 +73,13 @@ export async function submitAnswerAction(
     return {
       status: "info",
       message: "You already solved today’s riddle. Come back tomorrow!",
+    };
+  }
+
+  if (payload.status === "not_found") {
+    return {
+      status: "error",
+      message: "This riddle isn’t available yet or could not be loaded.",
     };
   }
 

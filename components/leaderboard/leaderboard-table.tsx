@@ -1,6 +1,7 @@
 import { Crown, Medal } from "lucide-react";
 
 import { StreakBadge } from "@/components/streak/streak-badge";
+import { ProfileAvatarIcon } from "@/lib/profile-avatars";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
@@ -9,6 +10,7 @@ type LeaderboardUser = {
   display_name: string;
   total_points: number;
   current_streak: number;
+  avatar_icon: string | null;
 };
 
 type LeaderboardTableProps = {
@@ -42,7 +44,15 @@ export function LeaderboardTable({ users }: LeaderboardTableProps) {
                     {index < 3 ? <Medal className="size-4 text-amber-500" /> : null}#{index + 1}
                   </span>
                 </TableCell>
-                <TableCell>{user.display_name}</TableCell>
+                <TableCell>
+                  <span className="inline-flex items-center gap-2">
+                    <ProfileAvatarIcon
+                      id={user.avatar_icon}
+                      className="size-7 shrink-0 text-primary"
+                    />
+                    <span>{user.display_name}</span>
+                  </span>
+                </TableCell>
                 <TableCell>
                   <StreakBadge streak={user.current_streak} />
                 </TableCell>

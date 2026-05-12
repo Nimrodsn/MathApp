@@ -1,12 +1,14 @@
 import Link from "next/link";
-import { Brain, Trophy, UserCircle } from "lucide-react";
+import { Brain, Trophy } from "lucide-react";
 
 import { signOutAction } from "@/app/auth/actions";
 import { Button } from "@/components/ui/button";
+import { ProfileAvatarIcon } from "@/lib/profile-avatars";
 
 export type HeaderUser = {
   displayName: string | null;
   email: string | null;
+  avatarIconId?: string | null;
 };
 
 type AppHeaderProps = {
@@ -58,7 +60,10 @@ export function AppHeader({ isLoggedIn, isAdmin, user }: AppHeaderProps) {
             <div className="flex min-w-0 max-w-[min(100%,14rem)] items-center gap-2 sm:max-w-xs">
               {user ? (
                 <>
-                  <UserCircle className="size-8 shrink-0 text-primary" aria-hidden />
+                  <ProfileAvatarIcon
+                    id={user.avatarIconId}
+                    className="size-8 shrink-0 text-primary"
+                  />
                   <div className="min-w-0 flex-1 text-start">
                     <p className="truncate text-sm font-semibold text-foreground">{primaryLabel(user)}</p>
                     {user.email &&
@@ -69,6 +74,9 @@ export function AppHeader({ isLoggedIn, isAdmin, user }: AppHeaderProps) {
                   </div>
                 </>
               ) : null}
+              <Button asChild size="sm" variant="ghost" className="shrink-0">
+                <Link href="/profile">Profile</Link>
+              </Button>
               <form action={signOutAction} className="shrink-0">
                 <Button size="sm" variant="secondary" type="submit">
                   Sign out

@@ -7,6 +7,14 @@ import { z } from "zod";
 import { requireAdmin } from "@/lib/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
+function getImageFile(formData: FormData): File | null {
+  const raw = formData.get("image");
+  if (raw instanceof File && raw.size > 0) {
+    return raw;
+  }
+  return null;
+}
+
 const createRiddleSchema = z.object({
   title: z.string().min(3).max(120),
   content: z.string().min(5),
@@ -37,17 +45,16 @@ export async function createRiddleAction(
   }
 
   const supabase = createSupabaseAdminClient();
-  const imageFile = formData.get("image") as File | null;
+  const imageFile = getImageFile(formData);
   let imagePath: string | null = null;
 
-  if (imageFile && imageFile.size > 0) {
-    const extension = imageFile.name.split(".").pop() ?? "png";
+  if (imageFile) {
+    const extension = imageFile.name.split(".").pop()?.toLowerCase() ?? "png";
     const storagePath = `${parsed.data.releaseDate}/${crypto.randomUUID()}.${extension}`;
-    const arrayBuffer = await imageFile.arrayBuffer();
 
     const { error: uploadError } = await supabase.storage
       .from("riddle-images")
-      .upload(storagePath, Buffer.from(arrayBuffer), {
+      .upload(storagePath, imageFile, {
         contentType: imageFile.type || "image/png",
         upsert: false,
       });
@@ -115,22 +122,21 @@ export async function updateRiddleAction(
     return { status: "error", message: fetchError?.message ?? "Riddle not found." };
   }
 
-  const imageFile = formData.get("image") as File | null;
+  const imageFile = getImageFile(formData);
   const oldImagePath = existing.image_path;
   let nextImagePath: string | null | undefined;
 
-  if (imageFile && imageFile.size > 0) {
+  if (imageFile) {
     if (oldImagePath) {
       await supabase.storage.from("riddle-images").remove([oldImagePath]);
     }
 
-    const extension = imageFile.name.split(".").pop() ?? "png";
+    const extension = imageFile.name.split(".").pop()?.toLowerCase() ?? "png";
     const storagePath = `${parsed.data.releaseDate}/${crypto.randomUUID()}.${extension}`;
-    const arrayBuffer = await imageFile.arrayBuffer();
 
     const { error: uploadError } = await supabase.storage
       .from("riddle-images")
-      .upload(storagePath, Buffer.from(arrayBuffer), {
+      .upload(storagePath, imageFile, {
         contentType: imageFile.type || "image/png",
         upsert: false,
       });

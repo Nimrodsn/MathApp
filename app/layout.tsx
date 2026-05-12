@@ -22,7 +22,11 @@ export default async function RootLayout({
 }>) {
   let isLoggedIn = false;
   let isAdmin = false;
-  let userProfile: { displayName: string | null; email: string | null } | null = null;
+  let userProfile: {
+    displayName: string | null;
+    email: string | null;
+    avatarIconId: string | null;
+  } | null = null;
 
   try {
     const supabase = await createSupabaseServerClient();
@@ -39,19 +43,21 @@ export default async function RootLayout({
     if (user) {
       const { data: profile, error: profileError } = await supabase
         .from("profiles")
-        .select("display_name,email")
+        .select("display_name,email,avatar_icon")
         .eq("id", user.id)
-        .maybeSingle<{ display_name: string; email: string }>();
+        .maybeSingle<{ display_name: string; email: string; avatar_icon: string | null }>();
 
       if (!profileError && profile) {
         userProfile = {
           displayName: profile.display_name ?? null,
           email: profile.email ?? user.email ?? null,
+          avatarIconId: profile.avatar_icon ?? null,
         };
       } else {
         userProfile = {
           displayName: null,
           email: user.email ?? null,
+          avatarIconId: null,
         };
       }
     }

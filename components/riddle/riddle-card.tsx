@@ -54,6 +54,19 @@ export function RiddleCard({
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        {imageUrl ? (
+          <div className="relative aspect-video w-full overflow-hidden rounded-lg border border-indigo-100 bg-indigo-50/50">
+            <Image
+              src={imageUrl}
+              alt="Illustration for this riddle"
+              fill
+              className="object-contain"
+              sizes="(max-width: 768px) 100vw, 640px"
+              unoptimized
+              priority
+            />
+          </div>
+        ) : null}
         <div
           className="prose prose-indigo max-w-none rounded-lg bg-indigo-50 p-4 prose-headings:text-primary"
           dir="ltr"
@@ -63,11 +76,6 @@ export function RiddleCard({
             {content}
           </ReactMarkdown>
         </div>
-        {imageUrl ? (
-          <div className="relative h-64 w-full overflow-hidden rounded-lg border border-indigo-100">
-            <Image src={imageUrl} alt="Riddle visual" fill className="object-cover" unoptimized />
-          </div>
-        ) : null}
         <form action={formAction} className="space-y-3">
           <input type="hidden" name="riddleId" value={riddleId} />
           <label className="block space-y-2 text-sm font-medium">

@@ -48,8 +48,8 @@ export function RiddleUploadForm() {
           </div>
 
           <label className="block space-y-2 text-sm font-medium">
-            <span>Optional image</span>
-            <Input name="image" type="file" accept="image/*" />
+            <span>Optional image (PNG, JPEG, WebP; max ~10 MB)</span>
+            <Input name="image" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/*" />
           </label>
 
           <Button type="submit" disabled={pending}>

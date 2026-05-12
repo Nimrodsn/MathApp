@@ -21,6 +21,12 @@ Secrets stay out of git: use `.env.local` locally and Vercel **Environment Varia
    | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public anon key |
    | `SUPABASE_SERVICE_ROLE_KEY` | Server only; never expose in client code |
    | `ADMIN_EMAIL` | Must match the admin user’s email exactly |
+   | `ANTHROPIC_API_KEY` | For Claude-based answer grading ([Anthropic Console](https://console.anthropic.com/)); server-only |
+   | `ANTHROPIC_MODEL` | Optional; default `claude-3-5-haiku-20241022`. Haiku is cheaper/faster; Sonnet if you need heavier reasoning |
+
+   If `ANTHROPIC_API_KEY` is missing, answers still work using **strict normalized string match** (same as before AI grading).
+
+   **Riddle images (optional):** The `riddle-images` storage bucket and the `riddle images select public` policy in [`supabase/schema.sql`](supabase/schema.sql) must exist so admin uploads are stored and the daily riddle can show them. Admin uploads use `SUPABASE_SERVICE_ROLE_KEY` (server only). The app allows image uploads up to **~10 MB** per form (`serverActions.bodySizeLimit` in [`next.config.ts`](next.config.ts)).
 
    **Do not** set `ALLOW_SELF_SIGNED_CERTS=true` on Vercel (local TLS workaround only). Leave it unset or `false`.
 
@@ -42,6 +48,43 @@ Use the **same** Supabase project as local, or a dedicated production project wi
 
 Without this, email links and some redirects may still point at `localhost`.
 
+4. **Profile avatars:** Projects created before `avatar_icon` existed should run this once in the Supabase **SQL Editor** (safe to run if the column already exists—it will no-op the add):
+
+```sql
+alter table public.profiles add column if not exists avatar_icon text;
+
+update public.profiles set avatar_icon = 'user-circle' where avatar_icon is null;
+
+alter table public.profiles alter column avatar_icon set default 'user-circle';
+alter table public.profiles alter column avatar_icon set not null;
+
+alter table public.profiles drop constraint if exists profiles_avatar_icon_check;
+alter table public.profiles add constraint profiles_avatar_icon_check check (
+  avatar_icon in (
+    'user-circle',
+    'brain',
+    'trophy',
+    'sparkles',
+    'rocket',
+    'atom',
+    'graduation-cap',
+    'lightbulb'
+  )
+);
+```
+
+### 2b. Production checklist: profile avatars (Vercel + Supabase)
+
+Avatars are stored in Postgres on **`profiles.avatar_icon`** for every environment that uses your Supabase keys. There is no separate “local only” store—the live app at [https://math-app-orpin.vercel.app](https://math-app-orpin.vercel.app) uses the same code path once the steps below are done.
+
+| Step | Where | What to do |
+|------|--------|------------|
+| **1. Deploy** | GitHub + Vercel | Push the branch Vercel builds (usually **`main`**). Wait until the deployment **Build** succeeds. In the build output, confirm the **Route** list includes **`/profile`**. |
+| **2. Env** | Vercel → Project → **Settings** → **Environment Variables** | For **Production**, confirm **`NEXT_PUBLIC_SUPABASE_URL`** and **`NEXT_PUBLIC_SUPABASE_ANON_KEY`** match the Supabase project where students’ data lives (same values as a working `.env.local` for that project). After changing env vars, trigger a **Redeploy**. |
+| **3. SQL** | Supabase → **SQL Editor** | On **that same project**, run the SQL block in **step 4** above (adds `avatar_icon`, default, `NOT NULL`, `CHECK`). Run once per project; safe to re-run. |
+| **4. Auth URLs** | Supabase → **Authentication** → **URL configuration** | **Site URL:** `https://math-app-orpin.vercel.app` (use your real production hostname if it differs). **Redirect URLs:** add `https://math-app-orpin.vercel.app/**` and, if you use Vercel previews, `https://*.vercel.app/**`. |
+| **5. Smoke test** | Live site | Sign in → **Profile** (or `/profile`) → choose an icon → **Save icon** → hard refresh → header shows the icon; open **Leaderboard** and confirm the icon appears next to your name. |
+
 ---
 
 ## 3. Verify
@@ -49,6 +92,7 @@ Without this, email links and some redirects may still point at `localhost`.
 - [ ] GitHub shows latest commit on `main`.
 - [ ] Vercel shows a successful deployment for that commit.
 - [ ] Open the live URL: sign in, daily riddle, leaderboard, admin (admin email).
+- [ ] Profile avatars: completed the **2b** table (deploy, env, SQL, auth URLs) and smoke test on the production URL.
 
 ---
 

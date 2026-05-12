@@ -63,7 +63,7 @@ export async function getTopProfiles(limit = 25) {
 
   const { data, error } = await supabase
     .from("profiles")
-    .select("id,display_name,total_points,current_streak")
+    .select("id,display_name,total_points,current_streak,avatar_icon")
     .order("total_points", { ascending: false })
     .order("current_streak", { ascending: false })
     .limit(limit);
