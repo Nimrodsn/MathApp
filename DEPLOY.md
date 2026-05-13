@@ -21,10 +21,10 @@ Secrets stay out of git: use `.env.local` locally and Vercel **Environment Varia
    | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public anon key |
    | `SUPABASE_SERVICE_ROLE_KEY` | Server only; never expose in client code |
    | `ADMIN_EMAIL` | Must match the admin user’s email exactly |
-   | `ANTHROPIC_API_KEY` | For Claude-based answer grading ([Anthropic Console](https://console.anthropic.com/)); server-only |
-   | `ANTHROPIC_MODEL` | Optional; default `claude-3-5-haiku-20241022`. Haiku is cheaper/faster; Sonnet if you need heavier reasoning |
+   | `ANTHROPIC_API_KEY` | **Required on Vercel for semantic grading** (paraphrases, `1/2` vs `0.5`, units, Hebrew wording). Create a key in [Anthropic Console](https://console.anthropic.com/), add it here for **Production** (and Preview if needed), then **Redeploy** so serverless picks it up. Server-only; never expose to the client. |
+   | `ANTHROPIC_MODEL` | Optional; default `claude-3-5-haiku-20241022`. Haiku is cheaper/faster; use a current **Sonnet** model id from Anthropic’s docs if you need heavier reasoning (higher cost/latency). |
 
-   If `ANTHROPIC_API_KEY` is missing, answers still work using **strict normalized string match** (same as before AI grading).
+   If `ANTHROPIC_API_KEY` is **unset**, submissions still work but use **strict normalized string match only** (no Claude). The app also applies a small **numeric/fraction** equivalence check without the API; true semantic checks need the key on each environment (local `.env.local` and Vercel env vars).
 
    **Riddle images (optional):** The `riddle-images` storage bucket and the `riddle images select public` policy in [`supabase/schema.sql`](supabase/schema.sql) must exist so admin uploads are stored and the daily riddle can show them. Admin uploads use `SUPABASE_SERVICE_ROLE_KEY` (server only). The app allows image uploads up to **~10 MB** per form (`serverActions.bodySizeLimit` in [`next.config.ts`](next.config.ts)).
 

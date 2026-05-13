@@ -46,6 +46,11 @@ export function AppHeader({ isLoggedIn, isAdmin, user }: AppHeaderProps) {
               Leaderboard
             </Link>
           </Button>
+          {isLoggedIn ? (
+            <Button asChild variant="ghost" size="sm">
+              <Link href="/riddles">All riddles</Link>
+            </Button>
+          ) : null}
           {isAdmin ? (
             <>
               <Button asChild variant="ghost" size="sm">
