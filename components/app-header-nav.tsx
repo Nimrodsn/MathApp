@@ -135,14 +135,17 @@ export function AppHeaderNav({ isLoggedIn, isAdmin, user }: AppHeaderNavProps) {
         )}
       </nav>
 
-      <div className="flex md:hidden">
+      <div className="flex shrink-0 md:hidden">
         <Sheet>
           <SheetTrigger asChild>
             <Button type="button" variant="outline" size="icon" aria-label="Open navigation menu">
               <Menu className="size-5" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="start" className="flex flex-col overflow-y-auto">
+          <SheetContent
+            side="end"
+            className="flex max-h-[100dvh] flex-col overflow-y-auto pt-[max(0.75rem,env(safe-area-inset-top))] pb-[max(0.75rem,env(safe-area-inset-bottom))]"
+          >
             <SheetHeader>
               <SheetTitle className="sr-only">Navigation menu</SheetTitle>
             </SheetHeader>

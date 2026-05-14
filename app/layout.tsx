@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Rubik } from "next/font/google";
 import "./globals.css";
 import { AppHeader } from "@/components/app-header";
@@ -13,6 +13,12 @@ const rubik = Rubik({
 export const metadata: Metadata = {
   title: "Math Master 5U",
   description: "Daily competitive math riddles for high school students.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default async function RootLayout({
@@ -67,9 +73,9 @@ export default async function RootLayout({
 
   return (
     <html lang="he" className={`${rubik.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col" dir="rtl">
+      <body className="flex min-h-full min-w-0 flex-col overflow-x-clip" dir="rtl">
         <AppHeader isLoggedIn={isLoggedIn} isAdmin={isAdmin} user={userProfile} />
-        <main className="mx-auto flex w-full max-w-6xl flex-1 px-4 py-6 sm:px-6">{children}</main>
+        <main className="mx-auto flex w-full min-w-0 max-w-6xl flex-1 px-4 py-6 sm:px-6">{children}</main>
       </body>
     </html>
   );
