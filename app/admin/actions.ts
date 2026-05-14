@@ -222,3 +222,52 @@ export async function deleteRiddleAction(formData: FormData): Promise<void> {
 
   redirect("/admin/riddles");
 }
+
+const updateProfileScoresSchema = z.object({
+  userId: z.string().uuid(),
+  totalPoints: z.coerce.number().int().min(0).max(1_000_000),
+  currentStreak: z.coerce.number().int().min(0).max(100_000),
+});
+
+export type LeaderboardEditState = {
+  status: "idle" | "error" | "success";
+  message: string;
+};
+
+export async function updateProfileScoresAction(
+  _prevState: LeaderboardEditState,
+  formData: FormData,
+): Promise<LeaderboardEditState> {
+  await requireAdmin();
+
+  const parsed = updateProfileScoresSchema.safeParse({
+    userId: String(formData.get("userId")),
+    totalPoints: formData.get("totalPoints"),
+    currentStreak: formData.get("currentStreak"),
+  });
+
+  if (!parsed.success) {
+    return {
+      status: "error",
+      message: "Invalid input. Use whole numbers: points 0–1,000,000, streak 0–100,000.",
+    };
+  }
+
+  const supabase = createSupabaseAdminClient();
+  const { error } = await supabase
+    .from("profiles")
+    .update({
+      total_points: parsed.data.totalPoints,
+      current_streak: parsed.data.currentStreak,
+    })
+    .eq("id", parsed.data.userId);
+
+  if (error) {
+    return { status: "error", message: error.message };
+  }
+
+  revalidatePath("/leaderboard");
+  revalidatePath("/admin/leaderboard");
+
+  return { status: "success", message: "Scores saved." };
+}

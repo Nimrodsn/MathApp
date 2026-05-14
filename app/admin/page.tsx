@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ListOrdered, ShieldCheck } from "lucide-react";
+import { ListOrdered, ShieldCheck, Trophy } from "lucide-react";
 
 import { RiddleUploadForm } from "@/components/admin/riddle-upload-form";
 import { Button } from "@/components/ui/button";
@@ -15,12 +15,20 @@ export default async function AdminPage() {
           <ShieldCheck className="size-6" />
           Admin Dashboard
         </h1>
-        <Button asChild variant="outline" size="sm">
-          <Link href="/admin/riddles">
-            <ListOrdered className="size-4" />
-            View all riddles
-          </Link>
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button asChild variant="outline" size="sm">
+            <Link href="/admin/leaderboard">
+              <Trophy className="size-4" />
+              Leaderboard scores
+            </Link>
+          </Button>
+          <Button asChild variant="outline" size="sm">
+            <Link href="/admin/riddles">
+              <ListOrdered className="size-4" />
+              View all riddles
+            </Link>
+          </Button>
+        </div>
       </div>
       <div id="new-riddle">
         <RiddleUploadForm />

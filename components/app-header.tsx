@@ -59,6 +59,9 @@ export function AppHeader({ isLoggedIn, isAdmin, user }: AppHeaderProps) {
               <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
                 <Link href="/admin/riddles">Riddles</Link>
               </Button>
+              <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
+                <Link href="/admin/leaderboard">Scores</Link>
+              </Button>
             </>
           ) : null}
           {isLoggedIn ? (
