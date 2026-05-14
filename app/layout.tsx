@@ -1,14 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Rubik } from "next/font/google";
 import "./globals.css";
 import { AppHeader } from "@/components/app-header";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-const rubik = Rubik({
-  subsets: ["latin", "hebrew"],
-  variable: "--font-rubik",
-  display: "swap",
-});
+const rubikFontHref =
+  "https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap";
 
 export const metadata: Metadata = {
   title: "Math Master 5U",
@@ -72,7 +68,12 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang="he" className={`${rubik.variable} h-full min-w-0 overflow-x-clip antialiased`}>
+    <html lang="he" className="h-full min-w-0 overflow-x-clip antialiased">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href={rubikFontHref} rel="stylesheet" />
+      </head>
       <body className="flex min-h-full min-w-0 flex-col" dir="rtl">
         <AppHeader isLoggedIn={isLoggedIn} isAdmin={isAdmin} user={userProfile} />
         <main className="mx-auto flex w-full min-w-0 max-w-6xl flex-1 overflow-x-clip px-4 py-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:px-6">

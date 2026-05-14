@@ -28,7 +28,6 @@ function supabaseStorageRemotePatterns(): NonNullable<
   }
 }
 
-// `serverActions.bodySizeLimit` is supported at runtime; some `NextConfig` type versions omit it.
 const nextConfig = {
   // Avoid picking a parent-folder package-lock as the monorepo root on CI (e.g. Vercel).
   outputFileTracingRoot: projectRoot,
@@ -36,11 +35,11 @@ const nextConfig = {
     remotePatterns: supabaseStorageRemotePatterns(),
   },
   // Default limit (~1mb) rejects typical PNG/JPEG uploads from admin forms.
-  serverActions: {
-    bodySizeLimit: "10mb",
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "10mb",
+    },
   },
-} satisfies NextConfig & {
-  serverActions?: { bodySizeLimit?: string };
-};
+} satisfies NextConfig;
 
 export default nextConfig;
