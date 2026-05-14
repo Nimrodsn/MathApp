@@ -46,3 +46,46 @@ export async function updateProfileAvatarAction(
 
   return { status: "success", message: "Profile icon updated." };
 }
+
+export type ProfileDisplayNameState = {
+  status: "idle" | "error" | "success";
+  message: string;
+};
+
+const displayNameSchema = z
+  .string()
+  .trim()
+  .min(1, "Enter a display name.")
+  .max(80, "Display name must be at most 80 characters.");
+
+export async function updateDisplayNameAction(
+  _prevState: ProfileDisplayNameState,
+  formData: FormData,
+): Promise<ProfileDisplayNameState> {
+  const user = await requireUser();
+
+  const raw = String(formData.get("displayName") ?? "");
+  const parsed = displayNameSchema.safeParse(raw);
+
+  if (!parsed.success) {
+    const msg = parsed.error.flatten().formErrors[0] ?? "Invalid display name.";
+    return { status: "error", message: msg };
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase
+    .from("profiles")
+    .update({ display_name: parsed.data })
+    .eq("id", user.id);
+
+  if (error) {
+    return { status: "error", message: error.message };
+  }
+
+  revalidatePath("/");
+  revalidatePath("/profile");
+  revalidatePath("/leaderboard");
+  revalidatePath("/admin/leaderboard");
+
+  return { status: "success", message: "Display name saved." };
+}
