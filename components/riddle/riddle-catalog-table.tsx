@@ -18,8 +18,9 @@ export function RiddleCatalogTable({ riddles, todayIso }: RiddleCatalogTableProp
       <CardHeader>
         <CardTitle>Released riddles</CardTitle>
       </CardHeader>
-      <CardContent>
-        <Table>
+      <CardContent className="min-w-0">
+        <div className="w-full min-w-0 overflow-x-auto">
+          <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Release</TableHead>
@@ -68,7 +69,8 @@ export function RiddleCatalogTable({ riddles, todayIso }: RiddleCatalogTableProp
               })
             )}
           </TableBody>
-        </Table>
+          </Table>
+        </div>
       </CardContent>
     </Card>
   );

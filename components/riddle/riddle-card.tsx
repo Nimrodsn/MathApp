@@ -68,7 +68,7 @@ export function RiddleCard({
           </div>
         ) : null}
         <div
-          className="prose prose-indigo max-w-none rounded-lg bg-indigo-50 p-4 prose-headings:text-primary"
+          className="prose prose-indigo max-w-none min-w-0 overflow-x-auto rounded-lg bg-indigo-50 p-4 prose-headings:text-primary"
           dir="ltr"
           lang="en"
         >

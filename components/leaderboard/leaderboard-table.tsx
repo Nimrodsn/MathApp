@@ -26,8 +26,9 @@ export function LeaderboardTable({ users }: LeaderboardTableProps) {
           Top Students
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <Table>
+      <CardContent className="min-w-0">
+        <div className="w-full min-w-0 overflow-x-auto">
+          <Table>
           <TableHeader>
             <TableRow>
               <TableHead className="w-20">Rank</TableHead>
@@ -62,7 +63,8 @@ export function LeaderboardTable({ users }: LeaderboardTableProps) {
               </TableRow>
             ))}
           </TableBody>
-        </Table>
+          </Table>
+        </div>
       </CardContent>
     </Card>
   );
