@@ -16,7 +16,7 @@ export function AppHeader({ isLoggedIn, isAdmin, user }: AppHeaderProps) {
   return (
     <header className="sticky top-0 z-20 border-b border-border/80 bg-white/90 pt-[max(0px,env(safe-area-inset-top))] backdrop-blur">
       <div className="mx-auto flex w-full max-w-6xl min-w-0 items-center justify-between gap-3 px-4 py-3 sm:px-6">
-        <Link href="/" className="flex min-w-0 shrink items-center gap-2 text-primary">
+        <Link href="/" className="flex min-w-0 flex-1 items-center gap-2 text-primary">
           <Brain className="h-6 w-6 shrink-0" />
           <span className="truncate text-lg font-bold">Math Master 5U</span>
         </Link>

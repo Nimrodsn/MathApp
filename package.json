@@ -4,6 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
+    "dev:local": "next dev --webpack -H 127.0.0.1 -p 3000",
+    "dev:3001": "next dev --webpack -H 127.0.0.1 -p 3001",
+    "dev:4321": "next dev --webpack -H 127.0.0.1 -p 4321",
     "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",

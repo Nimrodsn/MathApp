@@ -72,10 +72,12 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang="he" className={`${rubik.variable} h-full antialiased`}>
-      <body className="flex min-h-full min-w-0 flex-col overflow-x-clip" dir="rtl">
+    <html lang="he" className={`${rubik.variable} h-full min-w-0 overflow-x-clip antialiased`}>
+      <body className="flex min-h-full min-w-0 flex-col" dir="rtl">
         <AppHeader isLoggedIn={isLoggedIn} isAdmin={isAdmin} user={userProfile} />
-        <main className="mx-auto flex w-full min-w-0 max-w-6xl flex-1 px-4 py-6 sm:px-6">{children}</main>
+        <main className="mx-auto flex w-full min-w-0 max-w-6xl flex-1 overflow-x-clip px-4 py-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:px-6">
+          {children}
+        </main>
       </body>
     </html>
   );

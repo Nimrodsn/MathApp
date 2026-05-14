@@ -18,19 +18,25 @@ const SheetOverlay = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Overlay
     ref={ref}
-    className={cn("fixed inset-0 z-50 bg-black/50 backdrop-blur-[2px]", className)}
+    className={cn("fixed inset-0 z-[100] bg-black/50 backdrop-blur-[2px]", className)}
     {...props}
   />
 ));
 SheetOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
 const sheetVariants = cva(
-  "fixed z-50 flex flex-col gap-4 border bg-card p-6 shadow-lg transition ease-in-out data-[state=closed]:duration-200 data-[state=open]:duration-200",
+  "fixed z-[100] flex flex-col gap-4 border bg-card p-6 shadow-lg transition ease-in-out data-[state=closed]:duration-200 data-[state=open]:duration-200",
   {
     variants: {
       side: {
+        /** Logical inline-start (RTL-aware). */
         start: "inset-y-0 start-0 h-full w-[min(100%,20rem)] border-e sm:max-w-sm",
+        /** Logical inline-end (RTL-aware). */
         end: "inset-y-0 end-0 h-full w-[min(100%,20rem)] border-s sm:max-w-sm",
+        /** Physical left edge (works when the menu lives on the left, e.g. RTL header). */
+        left: "inset-y-0 left-0 h-full w-[min(100%,20rem)] border-r sm:max-w-sm",
+        /** Physical right edge. */
+        right: "inset-y-0 right-0 h-full w-[min(100%,20rem)] border-l sm:max-w-sm",
       },
     },
     defaultVariants: {

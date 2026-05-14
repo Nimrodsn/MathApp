@@ -47,3 +47,14 @@ body {
   min-height: 100vh;
   background-image: radial-gradient(circle at top left, #c7d2fe 0%, #eef2ff 30%, #f0fdf4 100%);
 }
+
+/* Wide KaTeX / display math must not expand the page width on phones */
+.prose .katex-display,
+.prose .katex {
+  max-width: 100%;
+}
+.prose .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-block: 0.25rem;
+}

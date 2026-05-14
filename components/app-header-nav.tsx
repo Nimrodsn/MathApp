@@ -143,7 +143,7 @@ export function AppHeaderNav({ isLoggedIn, isAdmin, user }: AppHeaderNavProps) {
             </Button>
           </SheetTrigger>
           <SheetContent
-            side="end"
+            side="left"
             className="flex max-h-[100dvh] flex-col overflow-y-auto pt-[max(0.75rem,env(safe-area-inset-top))] pb-[max(0.75rem,env(safe-area-inset-bottom))]"
           >
             <SheetHeader>
