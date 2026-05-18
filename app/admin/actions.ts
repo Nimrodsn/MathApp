@@ -223,6 +223,70 @@ export async function deleteRiddleAction(formData: FormData): Promise<void> {
   redirect("/admin/riddles");
 }
 
+const setDailyRiddleSchema = z.object({
+  id: z.string().uuid(),
+});
+
+export async function setDailyRiddleAction(formData: FormData): Promise<void> {
+  await requireAdmin();
+
+  const parsed = setDailyRiddleSchema.safeParse({
+    id: String(formData.get("id")),
+  });
+
+  if (!parsed.success) {
+    redirect("/admin/riddles");
+  }
+
+  const supabase = createSupabaseAdminClient();
+
+  const { data: target, error: fetchError } = await supabase
+    .from("riddles")
+    .select("id")
+    .eq("id", parsed.data.id)
+    .maybeSingle();
+
+  if (fetchError || !target) {
+    redirect("/admin/riddles");
+  }
+
+  const { error: clearError } = await supabase
+    .from("riddles")
+    .update({ is_daily_featured: false })
+    .eq("is_daily_featured", true);
+
+  if (clearError) {
+    redirect("/admin/riddles");
+  }
+
+  const { error: setError } = await supabase
+    .from("riddles")
+    .update({ is_daily_featured: true })
+    .eq("id", parsed.data.id);
+
+  if (setError) {
+    redirect("/admin/riddles");
+  }
+
+  revalidatePath("/riddle");
+  revalidatePath("/admin/riddles");
+
+  redirect("/admin/riddles");
+}
+
+export async function clearDailyRiddleAction(): Promise<void> {
+  await requireAdmin();
+
+  const supabase = createSupabaseAdminClient();
+
+  await supabase.from("riddles").update({ is_daily_featured: false }).eq("is_daily_featured", true);
+
+  revalidatePath("/riddle");
+  revalidatePath("/admin/riddles");
+
+  redirect("/admin/riddles");
+}
+
 const updateProfileScoresSchema = z.object({
   userId: z.string().uuid(),
   totalPoints: z.coerce.number().int().min(0).max(1_000_000),

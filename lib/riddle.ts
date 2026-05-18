@@ -10,9 +10,39 @@ export type DailyRiddle = {
   release_date: string;
 };
 
+async function riddleWithImageUrl(
+  supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>,
+  data: DailyRiddle,
+) {
+  let imageUrl: string | null = null;
+  if (data.image_path) {
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from("riddle-images").getPublicUrl(data.image_path);
+    imageUrl = publicUrl;
+  }
+
+  return { ...data, image_url: imageUrl };
+}
+
 export async function getTodayRiddle() {
   const supabase = await createSupabaseServerClient();
   const today = startOfToday().toISOString().slice(0, 10);
+
+  const { data: featured, error: featuredError } = await supabase
+    .from("riddles")
+    .select("id,title,content_markdown,image_path,release_date")
+    .eq("is_daily_featured", true)
+    .limit(1)
+    .maybeSingle<DailyRiddle>();
+
+  if (featuredError) {
+    throw new Error(featuredError.message);
+  }
+
+  if (featured) {
+    return riddleWithImageUrl(supabase, featured);
+  }
 
   const { data, error } = await supabase
     .from("riddles")
@@ -30,15 +60,7 @@ export async function getTodayRiddle() {
     return null;
   }
 
-  let imageUrl: string | null = null;
-  if (data.image_path) {
-    const {
-      data: { publicUrl },
-    } = supabase.storage.from("riddle-images").getPublicUrl(data.image_path);
-    imageUrl = publicUrl;
-  }
-
-  return { ...data, image_url: imageUrl };
+  return riddleWithImageUrl(supabase, data);
 }
 
 export async function hasSolvedRiddle(userId: string, riddleId: string) {

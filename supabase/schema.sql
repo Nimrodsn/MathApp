@@ -48,6 +48,7 @@ create table if not exists public.riddles (
   image_path text,
   correct_answer_normalized text not null,
   release_date date not null unique,
+  is_daily_featured boolean not null default false,
   created_by uuid references auth.users (id),
   created_at timestamptz not null default now()
 );
@@ -65,6 +66,9 @@ create table if not exists public.riddle_submissions (
 );
 
 create index if not exists idx_riddles_release_date on public.riddles (release_date desc);
+create unique index if not exists uniq_riddles_daily_featured
+  on public.riddles (is_daily_featured)
+  where is_daily_featured = true;
 create index if not exists idx_submissions_user_riddle on public.riddle_submissions (user_id, riddle_id);
 create unique index if not exists uniq_correct_submission_per_user_riddle
   on public.riddle_submissions (user_id, riddle_id)
@@ -149,7 +153,7 @@ create policy "riddles_select_released"
   on public.riddles
   for select
   to authenticated
-  using (release_date <= current_date);
+  using (release_date <= current_date or is_daily_featured = true);
 
 drop policy if exists "submissions_insert_own" on public.riddle_submissions;
 create policy "submissions_insert_own"
@@ -266,7 +270,7 @@ begin
   into v_expected_answer
   from public.riddles r
   where r.id = p_riddle_id
-    and r.release_date <= current_date;
+    and (r.release_date <= current_date or r.is_daily_featured = true);
 
   if v_expected_answer is null then
     return jsonb_build_object('status', 'not_found');

@@ -50,7 +50,9 @@ Without this, email links and some redirects may still point at `localhost`.
 
 4. **Ranked scoring:** Run once in the Supabase **SQL Editor** on each project (production and any shared dev DB). Copy the full contents of [`supabase/migrations/20260518_ranked_scoring.sql`](supabase/migrations/20260518_ranked_scoring.sql). This adds `solve_rank` / `awarded_points` and the `award_correct_submission` function (1st correct solver on a riddle = 10 pts, 2nd = 9, … 10th+ = 1). Redeploy Vercel after applying. Existing past solves are not recalculated.
 
-5. **Profile avatars:** Projects created before `avatar_icon` existed should run this once in the Supabase **SQL Editor** (safe to re-run: `add column if not exists` no-ops). **When the app adds new avatar ids**, run the full block again (or only the `drop constraint` / `add constraint` lines) so the `CHECK` matches the latest list in this doc.
+5. **Admin daily riddle:** Run once in the Supabase **SQL Editor**. Copy the full contents of [`supabase/migrations/20260519_daily_riddle_selection.sql`](supabase/migrations/20260519_daily_riddle_selection.sql). This adds `is_daily_featured` so admins can pick which riddle appears on `/riddle` (including scheduled riddles). Redeploy Vercel after applying.
+
+6. **Profile avatars:** Projects created before `avatar_icon` existed should run this once in the Supabase **SQL Editor** (safe to re-run: `add column if not exists` no-ops). **When the app adds new avatar ids**, run the full block again (or only the `drop constraint` / `add constraint` lines) so the `CHECK` matches the latest list in this doc.
 
 ```sql
 alter table public.profiles add column if not exists avatar_icon text;

@@ -9,6 +9,7 @@ export type AdminRiddleRow = {
   image_path: string | null;
   correct_answer_normalized: string;
   release_date: string;
+  is_daily_featured: boolean;
   created_at: string;
 };
 
@@ -17,7 +18,9 @@ export async function fetchAllRiddlesAdmin(): Promise<AdminRiddleRow[]> {
 
   const { data, error } = await supabase
     .from("riddles")
-    .select("id,title,content_markdown,image_path,correct_answer_normalized,release_date,created_at")
+    .select(
+      "id,title,content_markdown,image_path,correct_answer_normalized,release_date,is_daily_featured,created_at",
+    )
     .order("release_date", { ascending: false });
 
   if (error) {
@@ -32,7 +35,9 @@ export async function fetchRiddleByIdAdmin(id: string): Promise<AdminRiddleRow |
 
   const { data, error } = await supabase
     .from("riddles")
-    .select("id,title,content_markdown,image_path,correct_answer_normalized,release_date,created_at")
+    .select(
+      "id,title,content_markdown,image_path,correct_answer_normalized,release_date,is_daily_featured,created_at",
+    )
     .eq("id", id)
     .maybeSingle<AdminRiddleRow>();
 

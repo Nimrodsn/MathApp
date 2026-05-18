@@ -43,16 +43,24 @@ export async function recordRiddleAttempt(params: {
 
   const { data: riddle, error: riddleError } = await admin
     .from("riddles")
-    .select("id, title, content_markdown, correct_answer_normalized, release_date")
+    .select("id, title, content_markdown, correct_answer_normalized, release_date, is_daily_featured")
     .eq("id", params.riddleId)
-    .maybeSingle();
+    .maybeSingle<{
+      id: string;
+      title: string;
+      content_markdown: string;
+      correct_answer_normalized: string;
+      release_date: string;
+      is_daily_featured: boolean;
+    }>();
 
   if (riddleError || !riddle) {
     return { status: "not_found" };
   }
 
   const releaseDate = asDateStr(riddle.release_date);
-  if (!releaseDate || releaseDate > todayStr) {
+  const isFeaturedDaily = Boolean(riddle.is_daily_featured);
+  if (!releaseDate || (releaseDate > todayStr && !isFeaturedDaily)) {
     return { status: "not_found" };
   }
 
