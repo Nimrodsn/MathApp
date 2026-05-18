@@ -50,7 +50,8 @@ export function RiddleCard({
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>
-          Solve today’s challenge to earn 10 points and keep your streak alive.
+          Be among the first correct solvers to earn more points: 1st gets 10, 2nd gets 9, down to
+          1 point from 10th place onward. Wrong tries do not cost your rank.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">

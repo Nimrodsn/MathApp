@@ -4,12 +4,14 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 import { recordRiddleAttempt } from "@/lib/riddle-submit-server";
+import { formatRankedSuccessMessage } from "@/lib/scoring";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export type SubmitAnswerState = {
   message: string;
   status: "idle" | "error" | "success" | "info";
   awardedPoints?: number;
+  solveRank?: number;
   streak?: number;
 };
 
@@ -41,7 +43,7 @@ export async function submitAnswerAction(
   }
 
   let payload:
-    | { status: "correct"; awarded_points: number; current_streak: number }
+    | { status: "correct"; awarded_points: number; solve_rank: number; current_streak: number }
     | { status: "already_solved" }
     | { status: "incorrect" }
     | { status: "not_found" };
@@ -63,8 +65,9 @@ export async function submitAnswerAction(
   if (payload.status === "correct") {
     return {
       status: "success",
-      message: "Brilliant! +10 points added.",
+      message: formatRankedSuccessMessage(payload.solve_rank, payload.awarded_points),
       awardedPoints: payload.awarded_points,
+      solveRank: payload.solve_rank,
       streak: payload.current_streak,
     };
   }

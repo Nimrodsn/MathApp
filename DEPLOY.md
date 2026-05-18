@@ -48,7 +48,9 @@ Use the **same** Supabase project as local, or a dedicated production project wi
 
 Without this, email links and some redirects may still point at `localhost`.
 
-4. **Profile avatars:** Projects created before `avatar_icon` existed should run this once in the Supabase **SQL Editor** (safe to re-run: `add column if not exists` no-ops). **When the app adds new avatar ids**, run the full block again (or only the `drop constraint` / `add constraint` lines) so the `CHECK` matches the latest list in this doc.
+4. **Ranked scoring:** Run once in the Supabase **SQL Editor** on each project (production and any shared dev DB). Copy the full contents of [`supabase/migrations/20260518_ranked_scoring.sql`](supabase/migrations/20260518_ranked_scoring.sql). This adds `solve_rank` / `awarded_points` and the `award_correct_submission` function (1st correct solver on a riddle = 10 pts, 2nd = 9, … 10th+ = 1). Redeploy Vercel after applying. Existing past solves are not recalculated.
+
+5. **Profile avatars:** Projects created before `avatar_icon` existed should run this once in the Supabase **SQL Editor** (safe to re-run: `add column if not exists` no-ops). **When the app adds new avatar ids**, run the full block again (or only the `drop constraint` / `add constraint` lines) so the `CHECK` matches the latest list in this doc.
 
 ```sql
 alter table public.profiles add column if not exists avatar_icon text;
@@ -89,7 +91,7 @@ Avatars are stored in Postgres on **`profiles.avatar_icon`** for every environme
 |------|--------|------------|
 | **1. Deploy** | GitHub + Vercel | Push the branch Vercel builds (usually **`main`**). Wait until the deployment **Build** succeeds. In the build output, confirm the **Route** list includes **`/profile`**. |
 | **2. Env** | Vercel → Project → **Settings** → **Environment Variables** | For **Production**, confirm **`NEXT_PUBLIC_SUPABASE_URL`** and **`NEXT_PUBLIC_SUPABASE_ANON_KEY`** match the Supabase project where students’ data lives (same values as a working `.env.local` for that project). After changing env vars, trigger a **Redeploy**. |
-| **3. SQL** | Supabase → **SQL Editor** | On **that same project**, run the SQL block in **step 4** above (adds `avatar_icon`, default, `NOT NULL`, `CHECK`). Run once per project; safe to re-run. |
+| **3. SQL** | Supabase → **SQL Editor** | On **that same project**, run the SQL block in **step 5** above (adds `avatar_icon`, default, `NOT NULL`, `CHECK`). Run once per project; safe to re-run. |
 | **4. Auth URLs** | Supabase → **Authentication** → **URL configuration** | **Site URL:** `https://math-app-orpin.vercel.app` (use your real production hostname if it differs). **Redirect URLs:** add `https://math-app-orpin.vercel.app/**` and, if you use Vercel previews, `https://*.vercel.app/**`. |
 | **5. Smoke test** | Live site | Sign in → **Profile** (or `/profile`) → choose an icon → **Save icon** → hard refresh → header shows the icon; open **Leaderboard** and confirm the icon appears next to your name. |
 

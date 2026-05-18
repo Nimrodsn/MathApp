@@ -40,7 +40,9 @@ export default function Home() {
         <Card className="border-amber-200">
           <CardContent className="p-5">
             <p className="font-semibold text-amber-700">Points and Rankings</p>
-            <p className="text-sm text-gray-700">Every correct answer gives +10 points.</p>
+            <p className="text-sm text-gray-700">
+              Faster correct answers earn more: 1st gets 10 pts, 2nd gets 9, … 10th+ gets 1.
+            </p>
           </CardContent>
         </Card>
         <Card className="border-emerald-200">

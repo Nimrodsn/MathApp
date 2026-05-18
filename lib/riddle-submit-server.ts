@@ -8,12 +8,6 @@ function utcTodayStr(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
-function utcYesterdayStr(): string {
-  const d = new Date();
-  d.setUTCDate(d.getUTCDate() - 1);
-  return d.toISOString().slice(0, 10);
-}
-
 function asDateStr(value: unknown): string | null {
   if (value == null) {
     return null;
@@ -22,15 +16,22 @@ function asDateStr(value: unknown): string | null {
   return s.length >= 10 ? s.slice(0, 10) : s;
 }
 
+type AwardRpcResult = {
+  status: string;
+  awarded_points?: number;
+  solve_rank?: number;
+  current_streak?: number;
+};
+
 export type RecordRiddleAttemptResult =
-  | { status: "correct"; awarded_points: number; current_streak: number }
+  | { status: "correct"; awarded_points: number; solve_rank: number; current_streak: number }
   | { status: "already_solved" }
   | { status: "incorrect" }
   | { status: "not_found" };
 
 /**
- * Mirrors `public.submit_riddle_answer` using the service-role client so AI grading
- * can run on the server without exposing the canonical answer to the browser.
+ * Grades with AI on the server, then records submissions. Correct solves use
+ * `award_correct_submission` RPC for atomic rank/points (1st=10 … 10th+=1).
  */
 export async function recordRiddleAttempt(params: {
   userId: string;
@@ -39,7 +40,6 @@ export async function recordRiddleAttempt(params: {
 }): Promise<RecordRiddleAttemptResult> {
   const admin = createSupabaseAdminClient();
   const todayStr = utcTodayStr();
-  const yesterdayStr = utcYesterdayStr();
 
   const { data: riddle, error: riddleError } = await admin
     .from("riddles")
@@ -77,64 +77,58 @@ export async function recordRiddleAttempt(params: {
 
   const normalizedAnswer = normalizeAnswer(params.rawAnswer);
 
-  const { error: insertError } = await admin.from("riddle_submissions").insert({
-    user_id: params.userId,
-    riddle_id: params.riddleId,
-    submitted_answer: params.rawAnswer,
-    normalized_answer: normalizedAnswer,
-    is_correct: equivalent,
-  });
-
-  if (insertError) {
-    if (insertError.code === "23505") {
-      return { status: "already_solved" };
-    }
-    throw new Error(insertError.message);
-  }
-
   if (!equivalent) {
+    const { error: insertError } = await admin.from("riddle_submissions").insert({
+      user_id: params.userId,
+      riddle_id: params.riddleId,
+      submitted_answer: params.rawAnswer,
+      normalized_answer: normalizedAnswer,
+      is_correct: false,
+    });
+
+    if (insertError) {
+      throw new Error(insertError.message);
+    }
+
     return { status: "incorrect" };
   }
 
-  const { data: profile, error: profileError } = await admin
-    .from("profiles")
-    .select("last_solved_date, current_streak, total_points")
-    .eq("id", params.userId)
-    .single();
+  const { data: awardData, error: awardError } = await admin.rpc("award_correct_submission", {
+    p_riddle_id: params.riddleId,
+    p_user_id: params.userId,
+    p_answer: params.rawAnswer,
+    p_normalized_answer: normalizedAnswer,
+  });
 
-  if (profileError || !profile) {
-    throw new Error(profileError?.message ?? "Profile not found.");
+  if (awardError) {
+    if (awardError.code === "23505") {
+      return { status: "already_solved" };
+    }
+    throw new Error(awardError.message);
   }
 
-  const lastStr = asDateStr(profile.last_solved_date);
+  const result = awardData as AwardRpcResult | null;
 
-  let newStreak: number;
-  if (lastStr === yesterdayStr) {
-    newStreak = profile.current_streak + 1;
-  } else if (lastStr === todayStr) {
-    newStreak = profile.current_streak;
-  } else {
-    newStreak = 1;
+  if (!result || result.status === "already_solved") {
+    return { status: "already_solved" };
   }
 
-  const { data: updated, error: updateError } = await admin
-    .from("profiles")
-    .update({
-      total_points: profile.total_points + 10,
-      current_streak: newStreak,
-      last_solved_date: todayStr,
-    })
-    .eq("id", params.userId)
-    .select("current_streak")
-    .single();
+  if (result.status !== "correct") {
+    throw new Error("Unexpected award_correct_submission response.");
+  }
 
-  if (updateError || !updated) {
-    throw new Error(updateError?.message ?? "Failed to update profile.");
+  const awardedPoints = Number(result.awarded_points);
+  const solveRank = Number(result.solve_rank);
+  const currentStreak = Number(result.current_streak);
+
+  if (!Number.isFinite(awardedPoints) || !Number.isFinite(solveRank) || !Number.isFinite(currentStreak)) {
+    throw new Error("Invalid award_correct_submission payload.");
   }
 
   return {
     status: "correct",
-    awarded_points: 10,
-    current_streak: updated.current_streak,
+    awarded_points: awardedPoints,
+    solve_rank: solveRank,
+    current_streak: currentStreak,
   };
 }
