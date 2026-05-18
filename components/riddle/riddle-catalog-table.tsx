@@ -26,7 +26,7 @@ export function RiddleCatalogTable({ riddles, todayIso }: RiddleCatalogTableProp
               <TableHead>Release</TableHead>
               <TableHead>Title</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead className="text-right">View</TableHead>
+              <TableHead className="text-end">View</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -56,7 +56,7 @@ export function RiddleCatalogTable({ riddles, todayIso }: RiddleCatalogTableProp
                         <Badge variant="secondary">Scheduled</Badge>
                       )}
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-end">
                       <Button asChild variant="outline" size="sm">
                         <Link href={`/riddles/${riddle.id}`}>
                           <Eye className="size-4" />

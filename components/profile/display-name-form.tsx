@@ -36,7 +36,6 @@ export function DisplayNameForm({ currentDisplayName, signInEmail }: DisplayName
           maxLength={80}
           autoComplete="nickname"
           required
-          dir="auto"
         />
         <p className="text-xs text-muted-foreground">
           Shown in the header and on the leaderboard. Email is used for sign-in and cannot be

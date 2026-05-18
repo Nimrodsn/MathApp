@@ -49,6 +49,7 @@ export function AuthForm() {
               <Input
                 name="password"
                 type={showPassword ? "text" : "password"}
+                dir="ltr"
                 placeholder="••••••••"
                 autoComplete={isSignupMode ? "new-password" : "current-password"}
                 className="pe-10"

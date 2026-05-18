@@ -49,7 +49,7 @@ export default function Home() {
           <CardContent className="p-5">
             <p className="font-semibold text-emerald-700">Streak Mode</p>
             <p className="text-sm text-gray-700">
-              <Sparkles className="mr-1 inline size-4" />
+              <Sparkles className="ms-1 inline size-4" />
               Consecutive wins unlock a fire streak badge.
             </p>
           </CardContent>

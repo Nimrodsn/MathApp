@@ -34,7 +34,7 @@ export function LeaderboardTable({ users }: LeaderboardTableProps) {
               <TableHead className="w-20">Rank</TableHead>
               <TableHead>Student</TableHead>
               <TableHead>Streak</TableHead>
-              <TableHead className="text-right">Points</TableHead>
+              <TableHead className="text-end">Points</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -57,7 +57,7 @@ export function LeaderboardTable({ users }: LeaderboardTableProps) {
                 <TableCell>
                   <StreakBadge streak={user.current_streak} />
                 </TableCell>
-                <TableCell className="text-right font-bold text-primary">
+                <TableCell className="text-end font-bold text-primary">
                   {user.total_points}
                 </TableCell>
               </TableRow>

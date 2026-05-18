@@ -45,7 +45,14 @@
 body {
   @apply bg-background text-foreground font-sans;
   min-height: 100vh;
+  text-align: start;
   background-image: radial-gradient(circle at top left, #c7d2fe 0%, #eef2ff 30%, #f0fdf4 100%);
+}
+
+input:not([dir="ltr"]),
+textarea:not([dir="ltr"]) {
+  direction: rtl;
+  text-align: right;
 }
 
 /* Wide KaTeX / display math must not expand the page width on phones */

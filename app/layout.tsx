@@ -65,7 +65,7 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang="he" className="h-full min-w-0 overflow-x-clip antialiased">
+    <html lang="he" dir="rtl" className="h-full min-w-0 overflow-x-clip antialiased">
       <body className="flex min-h-full min-w-0 flex-col" dir="rtl">
         <AppHeader isLoggedIn={isLoggedIn} isAdmin={isAdmin} user={userProfile} />
         <main className="mx-auto flex w-full min-w-0 max-w-6xl flex-1 overflow-x-clip px-4 py-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:px-6">

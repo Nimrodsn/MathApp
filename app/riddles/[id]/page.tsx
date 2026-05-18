@@ -25,7 +25,7 @@ export default async function RiddleDetailPage({ params }: RiddleDetailPageProps
   return (
     <div className="w-full space-y-6 py-6">
       <div className="flex flex-wrap gap-2">
-        <Button asChild variant="ghost" size="sm" className="-ml-2 w-fit">
+        <Button asChild variant="ghost" size="sm" className="-ms-2 w-fit">
           <Link href="/riddles">
             <ArrowLeft className="size-4" />
             All riddles

@@ -25,7 +25,7 @@ export default async function EditRiddlePage({ params }: EditRiddlePageProps) {
 
   return (
     <div className="w-full space-y-4 py-6">
-      <Button asChild variant="ghost" size="sm" className="-ml-2 w-fit">
+      <Button asChild variant="ghost" size="sm" className="-ms-2 w-fit">
         <Link href="/admin/riddles">
           <ArrowLeft className="size-4" />
           All riddles
